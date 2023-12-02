@@ -1,6 +1,7 @@
 import { data } from "@ampt/data";
 import Link from "next/link";
 import { Order } from "./[orderId]/page";
+import { LiveCustomerOrdersView } from "./liveview";
 
 export default async function OrdersPage() {
   const userId = "anonymous";
@@ -29,29 +30,10 @@ export default async function OrdersPage() {
 
   return (
     <>
-      <ul>
-        {orders.items.map(({ value: order }) => (
-          <li
-            className="flex gap-4 m-2 p-3 border justify-between"
-            key={order.id}
-          >
-            <h2>
-              <span className="text-amber-800 font-semibold">
-                {order.coffee.name}
-              </span>
-            </h2>
-            <p>
-              <span className="font-semibold">Name:</span> {user.name}
-            </p>
-            <p>
-              <span className="font-semibold">Email:</span> {user.email}
-            </p>
-            <p>
-              <span className="font-semibold">{order.status}</span>
-            </p>
-          </li>
-        ))}
-      </ul>
+      <LiveCustomerOrdersView
+        initialOrders={orders.items.map(({ value }) => value)}
+        user={user}
+      />
       <Link
         href="/"
         className="
