@@ -1,6 +1,6 @@
 import { data } from "@ampt/data";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { LiveOrderView } from "./liveview";
 
 export type Order = {
   id: string;
@@ -19,33 +19,9 @@ export default async function OrderPage({
 }) {
   const order = await data.get<Order>(`orders:${orderId}`);
   const user = { name: "Dev Agrawal", email: "dev@clerk.dev" };
-  console.log(`OrderPage`, { orderId, order });
   if (!order) {
     redirect("/");
   }
 
-  return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl">
-        Order:{" "}
-        <span className="text-amber-800 font-semibold">
-          {order.coffee.name}
-        </span>
-      </h1>
-      <p>
-        <span className="font-semibold">Name:</span> {user.name}
-      </p>
-      <p>
-        <span className="font-semibold">Email:</span> {user.email}
-      </p>
-      <p>
-        <span className="font-semibold">
-          <span className="text-amber-800 font-semibold">{order.status}</span>
-        </span>
-      </p>
-      <p className="mt-4">
-        <Link href="/orders">All Orders</Link>
-      </p>
-    </div>
-  );
+  return <LiveOrderView order={order} user={user} />;
 }

@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { Order } from "../orders/[orderId]/page";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Order } from "./page";
 
-const TOPIC = "CUSTOMER_ORDERS";
-
-export function LiveCustomerOrdersView({
-  orders,
+export function LiveOrderView({
+  order,
   user,
 }: {
-  orders: Order[];
+  order: Order;
   user: { name: string; email: string };
 }) {
   const router = useRouter();
@@ -25,7 +24,7 @@ export function LiveCustomerOrdersView({
       socket.send(
         JSON.stringify({
           event: "subscribe",
-          topic: TOPIC,
+          topic: `orderId:${order.id}`,
         })
       );
     });
@@ -34,7 +33,7 @@ export function LiveCustomerOrdersView({
       console.log("message", e);
       const { topic } = JSON.parse(e.data);
 
-      if (topic === TOPIC) {
+      if (topic === `orderId:${order.id}`) {
         router.refresh();
       }
     });
@@ -51,28 +50,27 @@ export function LiveCustomerOrdersView({
   });
 
   return (
-    <ul>
-      {orders.map((order) => (
-        <li
-          className="flex gap-4 m-2 p-3 border justify-between"
-          key={order.id}
-        >
-          <h2>
-            <span className="text-amber-800 font-semibold">
-              {order.coffee.name}
-            </span>
-          </h2>
-          <p>
-            <span className="font-semibold">Name:</span> {user.name}
-          </p>
-          <p>
-            <span className="font-semibold">Email:</span> {user.email}
-          </p>
-          <p>
-            <span className="font-semibold">{order.status}</span>
-          </p>
-        </li>
-      ))}
-    </ul>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-xl">
+        Order:{" "}
+        <span className="text-amber-800 font-semibold">
+          {order.coffee.name}
+        </span>
+      </h1>
+      <p>
+        <span className="font-semibold">Name:</span> {user.name}
+      </p>
+      <p>
+        <span className="font-semibold">Email:</span> {user.email}
+      </p>
+      <p>
+        <span className="font-semibold">
+          <span className="text-amber-800 font-semibold">{order.status}</span>
+        </span>
+      </p>
+      <p className="mt-4">
+        <Link href="/orders">All Orders</Link>
+      </p>
+    </div>
   );
 }

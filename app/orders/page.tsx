@@ -7,7 +7,7 @@ export default async function OrdersPage() {
   const userId = "anonymous";
   const orders = await data.get<Order>("orders:*");
   const user = { name: "Dev Agrawal", email: "dev@clerk.dev" };
-  console.log(`OrdersPage`, { orders });
+  // console.log(`OrdersPage`, { orders });
 
   if (!orders.items.length) {
     return (
@@ -31,7 +31,7 @@ export default async function OrdersPage() {
   return (
     <>
       <LiveCustomerOrdersView
-        initialOrders={orders.items.map(({ value }) => value)}
+        orders={orders.items.map(({ value }) => value)}
         user={user}
       />
       <Link
