@@ -17,12 +17,8 @@ export default async function ChatPage() {
             className="flex gap-4 m-2 p-3 border justify-between"
             key={m.time}
           >
-            <h2>
-              <span className="text-amber-800 font-semibold">{m.from}</span>
-            </h2>
-            <p>
-              <span className="font-semibold">{m.content}</span>
-            </p>
+            <h2 className="text-amber-800 font-semibold">{m.from}</h2>
+            <p className="font-semibold">{m.content}</p>
           </li>
         ))}
       </ul>
