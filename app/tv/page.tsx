@@ -1,6 +1,6 @@
 import { data } from "@ampt/data";
 import { Order } from "../orders/[orderId]/page";
-import { TvLive } from "./liveview";
+import { Subscribe } from "../lib/subscribe/server";
 
 export default async function TvComponent() {
   const orders = await data.get<Order>(`orders:*`);
@@ -26,7 +26,7 @@ export default async function TvComponent() {
   return (
     <div>
       <div className="text-right">
-        <TvLive />
+        <Subscribe to="orders" />
       </div>
       <table className="table-auto text-4xl">
         <thead className="mb-2">

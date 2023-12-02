@@ -1,6 +1,7 @@
 import { data } from "@ampt/data";
 import { Order } from "../orders/[orderId]/page";
 import { Subscribe } from "../lib/subscribe/server";
+import { emitTo } from "../lib/subscribe/socket";
 
 export default async function BaristaPage() {
   const orders = await data.get<Order>("orders:*");
@@ -51,6 +52,9 @@ export default async function BaristaPage() {
                     order.status = "pending";
                   }
                   await data.set(`orders:${order.id}`, order);
+
+                  emitTo("orders");
+                  emitTo(`orders:${order.id}`);
                 }}
               >
                 <button
