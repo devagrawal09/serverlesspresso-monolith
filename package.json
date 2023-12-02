@@ -1,0 +1,41 @@
+{
+  "name": "@ampt-templates/nextjs",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "ampt:build": "ampt-next build",
+    "ampt:dev": "next dev",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ampt/data": "^1",
+    "@ampt/nextjs": "^2",
+    "@ampt/sdk": "^1",
+    "next": "13.5.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/uuid": "^9.0.7",
+    "autoprefixer": "^10",
+    "eslint": "^8",
+    "eslint-config-next": "13.5.4",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "typescript": "^5"
+  },
+  "ampt": {
+    "app": "serverlesspresso-next-gen",
+    "runtime": "nodejs18",
+    "org": "devagrawal09223929"
+  },
+  "files": [
+    "*"
+  ]
+}
