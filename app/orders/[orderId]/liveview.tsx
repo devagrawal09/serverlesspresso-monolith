@@ -47,7 +47,7 @@ export function LiveOrderView({
     });
 
     return () => socket.close();
-  });
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">

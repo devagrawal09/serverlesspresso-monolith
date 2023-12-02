@@ -2,17 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Order } from "../orders/[orderId]/page";
+import { useRouter } from "next/navigation";
 
 export function LiveOrdersView(props: {
-  initialOrders: Order[];
+  orders: Order[];
   progressOrder: (orderId: string) => Promise<void>;
 }) {
-  const [orders, setOrders] = useState(props.initialOrders);
-
-  useEffect(() => {
-    setOrders(props.initialOrders);
-  }, [props.initialOrders]);
-
+  const router = useRouter();
   useEffect(() => {
     console.log("connecting");
     const socket = new WebSocket("wss://innovative-binary-hbxlu.ampt.app");
@@ -30,10 +26,10 @@ export function LiveOrdersView(props: {
 
     socket.addEventListener("message", (e) => {
       console.log("message", e);
-      const { event, topic, data } = JSON.parse(e.data);
+      const { topic } = JSON.parse(e.data);
 
-      if (event === "created" && topic === "orders") {
-        setOrders((orders) => [...orders, data]);
+      if (topic === "orders") {
+        router.refresh();
       }
     });
 
@@ -46,11 +42,11 @@ export function LiveOrdersView(props: {
     });
 
     return () => socket.close();
-  });
+  }, []);
 
   return (
     <ul>
-      {orders.map((order) => (
+      {props.orders.map((order) => (
         <li
           className="flex gap-4 m-2 p-3 border justify-between"
           key={order.id}
@@ -63,13 +59,26 @@ export function LiveOrdersView(props: {
           <p>
             <span className="font-semibold">{order.status}</span>
           </p>
-
           <p>
             <button
-              className="px-2 py-1 bg-blue-300"
+              className={`px-2 py-1 ${
+                order.status === "pending"
+                  ? "bg-blue-300"
+                  : order.status === "confirmed"
+                  ? "bg-green-300"
+                  : order.status === "prepared"
+                  ? "bg-yellow-300"
+                  : "bg-red-300"
+              }`}
               onClick={() => props.progressOrder(order.id)}
             >
-              {order.status === "pending" ? "Confirm" : "Confirmed"}
+              {order.status === "pending"
+                ? "Confirm"
+                : order.status === "confirmed"
+                ? "Prepare"
+                : order.status === "prepared"
+                ? "Pick up"
+                : "Reset"}
             </button>
           </p>
         </li>

@@ -9,7 +9,7 @@ export type Order = {
     id: number;
     name: string;
   };
-  status: "pending" | "confirmed";
+  status: "pending" | "confirmed" | "prepared" | "picked up";
 };
 
 export default async function OrderPage({
