@@ -1,6 +1,7 @@
 import { data } from "@ampt/data";
 import { redirect } from "next/navigation";
-import { LiveOrderView } from "./liveview";
+import Link from "next/link";
+import { Subscribe } from "@/app/lib/subscribe/server";
 
 export type Order = {
   id: string;
@@ -23,5 +24,29 @@ export default async function OrderPage({
     redirect("/");
   }
 
-  return <LiveOrderView order={order} user={user} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <Subscribe to={`orders:${orderId}`} />
+      <h1 className="text-xl">
+        Order:{" "}
+        <span className="text-amber-800 font-semibold">
+          {order.coffee.name}
+        </span>
+      </h1>
+      <p>
+        <span className="font-semibold">Name:</span> {user.name}
+      </p>
+      <p>
+        <span className="font-semibold">Email:</span> {user.email}
+      </p>
+      <p>
+        <span className="font-semibold">
+          <span className="text-amber-800 font-semibold">{order.status}</span>
+        </span>
+      </p>
+      <p className="mt-4">
+        <Link href="/orders">All Orders</Link>
+      </p>
+    </div>
+  );
 }

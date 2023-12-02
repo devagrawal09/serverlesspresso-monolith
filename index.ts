@@ -1,18 +1,9 @@
 import "@ampt/nextjs/entrypoint";
 
 import { ws } from "@ampt/sdk";
-import {
-  onDisconnect as onDisconnectBarista,
-  onMessage as onMessageBarista,
-} from "./app/barista/events";
-import {
-  onDisconnect as onDisconnectCOrders,
-  onMessage as onMessageCOrders,
-} from "./app/orders/events";
-import {
-  onDisconnect as onDisconnectOrder,
-  onMessage as onMessageOrder,
-} from "./app/orders/[orderId]/events";
+import { onDisconnect, onMessage } from "./app/lib/subscribe/socket";
+import "./app/barista/events";
+import "./app/orders/[orderId]/events";
 
 ws.on("connected", (conn) => {
   // console.log("entry connected");
@@ -20,14 +11,10 @@ ws.on("connected", (conn) => {
 
 ws.on("disconnected", (conn) => {
   // console.log("entry disconnected");
-  onDisconnectBarista(conn);
-  onDisconnectCOrders(conn);
-  onDisconnectOrder(conn);
+  onDisconnect(conn);
 });
 
 ws.on("message", (conn, message) => {
   // console.log("entry message", message);
-  onMessageBarista(conn, message);
-  onMessageCOrders(conn, message);
-  onMessageOrder(conn, message);
+  onMessage(conn, message);
 });
