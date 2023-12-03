@@ -4,6 +4,7 @@ import { setTimeout } from "timers/promises";
 import { Order } from "../orders/[orderId]/page";
 import { v4 as uuid } from "uuid";
 import Link from "next/link";
+import type { Code } from "../tv/page";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -29,10 +30,28 @@ export default function OrderPage({
     "use server";
 
     const userId = formData.get("userId")?.toString() || "anonymous";
+    const code = Number(formData.get("code")?.toString() || 0);
 
     if (!coffee || !userId) {
       throw new Error("Missing name or email");
     }
+
+    const currentCode = await data.get<Code>("currentCode");
+
+    if (!currentCode) {
+      throw new Error("No code set");
+    }
+
+    if (code !== currentCode.code) {
+      throw new Error("Invalid code");
+    }
+
+    if (currentCode.uses >= 10) {
+      throw new Error("Code already used");
+    }
+
+    const res = await data.add<Code>("currentCode", "uses", 1);
+    console.log(`consumeCode`, { res });
 
     await setTimeout(DELAYS);
     const id = uuid();
@@ -57,6 +76,13 @@ export default function OrderPage({
           Order:{" "}
           <span className="text-amber-800 font-semibold">{coffee.name}</span>
         </h1>
+        <input
+          type="number"
+          name="code"
+          placeholder="Code"
+          className="p-2 border border-gray-300"
+          required
+        />
         <button type="submit" className="p-2 bg-blue-300">
           Order
         </button>

@@ -2,8 +2,21 @@ import { data } from "@ampt/data";
 import { Order } from "../orders/[orderId]/page";
 import { Subscribe } from "../lib/subscribe/server";
 
+export type Code = {
+  code: number;
+  uses: number;
+};
+
+async function getCurrentCode() {
+  // const randomCode = Math.floor(Math.random() * 10000);
+  // await data.set<Code>("currentCode", { code: 1234, uses: 0 });
+  const currentCode = await data.get<Code>("currentCode");
+  return currentCode;
+}
+
 export default async function TvComponent() {
   const orders = await data.get<Order>(`orders:*`);
+  const currentCode = await getCurrentCode();
 
   const { inQueue, readyForPickup } = orders.items.reduce<{
     inQueue: Order[];
@@ -27,6 +40,11 @@ export default async function TvComponent() {
     <div>
       <div className="text-right">
         <Subscribe to="orders" />
+        <h2>
+          <span className="text-6xl font-bold">{currentCode?.code}</span>
+          <br />
+          Order Code
+        </h2>
       </div>
       <table className="table-auto text-4xl">
         <thead className="mb-2">

@@ -21,6 +21,10 @@ export default function Home() {
         <Link href="/barista" className="hover:underline">
           Barista View
         </Link>
+        {" | "}
+        <Link href="/tv" className="hover:underline">
+          TV View
+        </Link>
       </p>
     </>
   );
