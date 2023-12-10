@@ -24,61 +24,59 @@ export default async function BaristaPage() {
             <p>
               <span className="font-semibold">{o.status}</span>
             </p>
-            <p>
-              <form
-                action={async function progressOrder() {
-                  "use server";
+            <form
+              action={async function progressOrder() {
+                "use server";
 
-                  const order = await data.get<Order>(`orders:${o.id}`);
-                  const status = order?.status;
+                const order = await data.get<Order>(`orders:${o.id}`);
+                const status = order?.status;
 
-                  if (!order) {
-                    throw new Error(`Order not found: ${o.id}`);
-                  }
+                if (!order) {
+                  throw new Error(`Order not found: ${o.id}`);
+                }
 
-                  if (status === "pending") {
-                    order.status = "confirmed";
-                  }
+                if (status === "pending") {
+                  order.status = "confirmed";
+                }
 
-                  if (status === "confirmed") {
-                    order.status = "prepared";
-                  }
+                if (status === "confirmed") {
+                  order.status = "prepared";
+                }
 
-                  if (status === "prepared") {
-                    order.status = "picked up";
-                  }
+                if (status === "prepared") {
+                  order.status = "picked up";
+                }
 
-                  if (status === "picked up") {
-                    order.status = "pending";
-                  }
-                  await data.set(`orders:${order.id}`, order);
+                if (status === "picked up") {
+                  order.status = "pending";
+                }
+                await data.set(`orders:${order.id}`, order);
 
-                  emitTo("orders");
-                  emitTo(`orders:${order.id}`);
-                }}
-              >
-                <button
-                  type="submit"
-                  className={`px-2 py-1 ${
-                    o.status === "pending"
-                      ? "bg-blue-300"
-                      : o.status === "confirmed"
-                      ? "bg-green-300"
-                      : o.status === "prepared"
-                      ? "bg-yellow-300"
-                      : "bg-red-300"
-                  }`}
-                >
-                  {o.status === "pending"
-                    ? "Confirm"
+                emitTo("orders");
+                emitTo(`orders:${order.id}`);
+              }}
+            >
+              <button
+                type="submit"
+                className={`px-2 py-1 ${
+                  o.status === "pending"
+                    ? "bg-blue-300"
                     : o.status === "confirmed"
-                    ? "Prepare"
+                    ? "bg-green-300"
                     : o.status === "prepared"
-                    ? "Pick up"
-                    : "Reset"}
-                </button>
-              </form>
-            </p>
+                    ? "bg-yellow-300"
+                    : "bg-red-300"
+                }`}
+              >
+                {o.status === "pending"
+                  ? "Confirm"
+                  : o.status === "confirmed"
+                  ? "Prepare"
+                  : o.status === "prepared"
+                  ? "Pick up"
+                  : "Reset"}
+              </button>
+            </form>
           </li>
         ))}
       </ul>

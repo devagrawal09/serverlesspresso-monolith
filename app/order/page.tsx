@@ -5,6 +5,7 @@ import { Order } from "../orders/[orderId]/page";
 import { v4 as uuid } from "uuid";
 import Link from "next/link";
 import type { Code } from "../tv/page";
+import { emitTo } from "../lib/subscribe/socket";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -46,12 +47,13 @@ export default function OrderPage({
       throw new Error("Invalid code");
     }
 
-    if (currentCode.uses >= 10) {
-      throw new Error("Code already used");
+    if (currentCode.uses >= 4) {
+      throw new Error("Code already used! Please wait for a new one");
     }
 
     const res = await data.add<Code>("currentCode", "uses", 1);
     console.log(`consumeCode`, { res });
+    emitTo("currentCode");
 
     await setTimeout(DELAYS);
     const id = uuid();

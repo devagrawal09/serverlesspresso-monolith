@@ -1,18 +1,3 @@
 import "@ampt/nextjs/entrypoint";
-
-import { ws } from "@ampt/sdk";
-import { onDisconnect, onMessage } from "./app/lib/subscribe/socket";
-
-ws.on("connected", (conn) => {
-  // console.log("entry connected");
-});
-
-ws.on("disconnected", (conn) => {
-  // console.log("entry disconnected");
-  onDisconnect(conn);
-});
-
-ws.on("message", (conn, message) => {
-  // console.log("entry message", message);
-  onMessage(conn, message);
-});
+import "./app/lib/subscribe/socket";
+import "./app/tv/events";

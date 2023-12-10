@@ -40,11 +40,24 @@ export default async function TvComponent() {
     <div>
       <div className="text-right">
         <Subscribe to="orders" />
-        <h2>
-          <span className="text-6xl font-bold">{currentCode?.code}</span>
-          <br />
-          Order Code
-        </h2>
+        <Subscribe to="currentCode" />
+        {currentCode ? (
+          <h2>
+            {currentCode.uses >= 4 ? (
+              <span className="text-2xl font-bold">
+                Code expired
+                <br />
+                wait for a new one
+              </span>
+            ) : (
+              <>
+                <span className="text-6xl font-bold">{currentCode.code}</span>
+                <br />
+                {4 - currentCode.uses} uses left
+              </>
+            )}
+          </h2>
+        ) : null}
       </div>
       <table className="table-auto text-4xl">
         <thead className="mb-2">
