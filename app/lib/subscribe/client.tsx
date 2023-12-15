@@ -1,57 +1,63 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import useWebSocket from "react-use-websocket";
 
-export function ClientSubscription(props: {
+import type { ServerMessage, ClientMessage } from "./socket";
+
+export function ClientSubscription({
+  url,
+  token,
+  children,
+}: {
   children?: React.ReactNode;
   url: string;
   token: string;
 }) {
   const router = useRouter();
-  const socketRef = useRef<WebSocket>();
-  const connectedPromiseRef = useRef<Promise<void>>();
+
+  const { lastMessage, sendJsonMessage, readyState } =
+    useWebSocket<ServerMessage>(url);
 
   useEffect(() => {
-    console.log("connecting");
-    const socket = new WebSocket(props.url);
-    socketRef.current = socket;
-
-    connectedPromiseRef.current = new Promise((resolve) => {
-      socket.addEventListener("open", () => {
+    switch (readyState) {
+      case -1:
+        console.log("idle");
+        break;
+      case 0:
+        console.log("connecting");
+        break;
+      case 1:
         console.log("connected");
-        resolve();
-      });
-    });
-
-    socket.addEventListener("message", (e) => {
-      console.log("message", e);
-      const message = e.data;
-
-      if (message === "refresh") {
-        router.refresh();
-      }
-    });
-
-    socket.addEventListener("close", () => {
-      console.log("disconnected");
-    });
-
-    socket.addEventListener("error", (error) => {
-      console.error("error", error);
-    });
-
-    return () => socket.close();
-  }, [props.url, router]);
+        break;
+      case 2:
+        console.log("disconnecting");
+        break;
+      case 3:
+        console.log("disconnected");
+        break;
+    }
+  }, [readyState]);
 
   useEffect(() => {
-    if (!socketRef.current) return;
+    if (!lastMessage) return;
 
-    connectedPromiseRef.current?.then(() => {
-      console.log("sending token", props.token);
-      socketRef.current?.send(JSON.stringify({ token: props.token }));
-    });
-  }, [props.token]);
+    const message = JSON.parse(lastMessage.data);
 
-  return <>{props.children}</>;
+    if (message === "refresh") {
+      router.refresh();
+    }
+  }, [lastMessage, router]);
+
+  useEffect(() => {
+    if (!readyState) return;
+
+    if (readyState === 1) {
+      console.log("sending token", token);
+      sendJsonMessage<ClientMessage>({ token });
+    }
+  }, [token, readyState, sendJsonMessage]);
+
+  return <>{children}</>;
 }

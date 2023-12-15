@@ -1,12 +1,19 @@
 import { data } from "@ampt/data";
 import { ws } from "@ampt/sdk";
 
+export type ClientMessage = { token: string };
+export type ServerMessage = "refresh";
+
+function sendMessage(connectionId: string, message: ServerMessage) {
+  return ws.send(connectionId, message);
+}
+
 export async function emitTo(to: string) {
   const subscriptions = await data.get<string>(`subscription:${to}:*`);
 
   const jobs = subscriptions.items.map(async ({ value: connectionId }) => {
     try {
-      await ws.send(connectionId, "refresh");
+      await sendMessage(connectionId, "refresh");
     } catch (e) {
       console.log("error sending to connection", { connectionId, e });
       await data.remove(`subscription:${to}:${connectionId}`);
@@ -30,7 +37,7 @@ ws.on("disconnected", async (conn) => {
   await Promise.all(subscriptions.items.map(({ key }) => data.remove(key)));
 });
 
-ws.on("message", async (conn, message) => {
+ws.on("message", async (conn, message: ClientMessage) => {
   console.log("socket message", message);
   const { token } = message;
   const topic = token;
