@@ -15,7 +15,7 @@ export async function emitTo(to: string) {
     try {
       await sendMessage(connectionId, "refresh");
     } catch (e) {
-      console.log("error sending to connection", { connectionId, e });
+      console.log("error sending to connection");
       await data.remove(`subscription:${to}:${connectionId}`);
     }
   });
@@ -24,11 +24,11 @@ export async function emitTo(to: string) {
 }
 
 ws.on("connected", (conn) => {
-  console.log("socket connected", JSON.stringify(conn, null, 2));
+  console.log("socket connected");
 });
 
 ws.on("disconnected", async (conn) => {
-  console.log("socket disconnected", JSON.stringify(conn, null, 2));
+  console.log("socket disconnected");
   const subscriptions = await data.getByLabel(
     "label1",
     `connections:${conn.connectionId}`
@@ -38,7 +38,7 @@ ws.on("disconnected", async (conn) => {
 });
 
 ws.on("message", async (conn, message: ClientMessage) => {
-  console.log("socket message", message);
+  console.log("socket message");
   const { token } = message;
   const topic = token;
 
