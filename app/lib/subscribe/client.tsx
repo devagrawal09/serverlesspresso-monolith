@@ -31,7 +31,7 @@ export function ClientSubscription({
   useEffect(() => {
     if (!lastMessage) return;
 
-    const message = JSON.parse(lastMessage.data);
+    const message = lastMessage.data as ServerMessage;
 
     if (message === "refresh") {
       router.refresh();

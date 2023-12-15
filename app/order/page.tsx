@@ -90,7 +90,7 @@ async function OrderForm({
       coffee,
       status: "pending",
     });
-    console.log(`placeOrder`, { orderId: id, orderKey, order });
+    console.log(`placeOrder`, { id, orderKey, order });
 
     redirect(`/orders/${id}`);
   }
