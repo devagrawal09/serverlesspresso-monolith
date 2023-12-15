@@ -1,7 +1,12 @@
 import { data } from "@ampt/data";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
+import { setTimeout } from "timers/promises";
+
 import { Subscribe } from "@/app/lib/subscribe/server";
+
+const DELAYS = Number(process.env.DELAYS || 0);
 
 export type Order = {
   id: string;
@@ -18,15 +23,28 @@ export default async function OrderPage({
 }: {
   params: { orderId: string };
 }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <Subscribe to={`orders:${orderId}`} />
+      <Suspense>
+        <OrderComponent orderId={orderId} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function OrderComponent({ orderId }: { orderId: string }) {
+  await setTimeout(DELAYS);
+
   const order = await data.get<Order>(`orders:${orderId}`);
   const user = { name: "Dev Agrawal", email: "dev@clerk.dev" };
+
   if (!order) {
     redirect("/");
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <Subscribe to={`orders:${orderId}`} />
+    <>
       <h1 className="text-xl">
         Order:{" "}
         <span className="text-amber-800 font-semibold">
@@ -47,6 +65,6 @@ export default async function OrderPage({
       <p className="mt-4">
         <Link href="/orders">All Orders</Link>
       </p>
-    </div>
+    </>
   );
 }

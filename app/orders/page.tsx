@@ -1,14 +1,36 @@
+import { Suspense } from "react";
 import { data } from "@ampt/data";
 import Link from "next/link";
-import { Order } from "./[orderId]/page";
+import { setTimeout } from "timers/promises";
+
+import type { Order } from "./[orderId]/page";
+
 import { Subscribe } from "../lib/subscribe/server";
 
-export default async function OrdersPage() {
+const DELAYS = Number(process.env.DELAYS || 0);
+
+export default function OrdersPage() {
+  console.log(`OrdersPage`);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Subscribe to="orders" />
+
+      <h1 className="text-xl">Hello Customer!</h1>
+      <Suspense fallback={<p className="mb-4">Loading Orders...</p>}>
+        <OrdersComponent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function OrdersComponent() {
+  await setTimeout(DELAYS);
+
   const userId = "anonymous";
   const orders = await data.get<Order>("orders:*");
   const user = { name: "Dev Agrawal", email: "dev@clerk.dev" };
-  // console.log(`OrdersPage`, { orders });
-
+  console.log(orders.items[0]);
   if (!orders.items.length) {
     return (
       <p>
@@ -30,7 +52,6 @@ export default async function OrdersPage() {
 
   return (
     <>
-      <Subscribe to="orders" />
       <ul>
         {orders.items.map(({ value: order }) => (
           <li

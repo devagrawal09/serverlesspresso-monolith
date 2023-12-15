@@ -1,22 +1,33 @@
 import { data } from "@ampt/data";
-import { Order } from "../orders/[orderId]/page";
+import { Suspense } from "react";
+import { setTimeout } from "timers/promises";
+
 import { Subscribe } from "../lib/subscribe/server";
+
+import type { Order } from "../orders/[orderId]/page";
+
+const DELAYS = Number(process.env.DELAYS || 0);
 
 export type Code = {
   code: number;
   uses: number;
 };
 
-async function getCurrentCode() {
-  // const randomCode = Math.floor(Math.random() * 10000);
-  // await data.set<Code>("currentCode", { code: 1234, uses: 0 });
-  const currentCode = await data.get<Code>("currentCode");
-  return currentCode;
+export default function TvPage() {
+  return (
+    <Suspense fallback={<p className="mb-4">Loading TV...</p>}>
+      <TvComponent />
+    </Suspense>
+  );
 }
 
-export default async function TvComponent() {
-  const orders = await data.get<Order>(`orders:*`);
-  const currentCode = await getCurrentCode();
+async function TvComponent() {
+  await setTimeout(DELAYS);
+
+  const [orders, currentCode] = await Promise.all([
+    data.get<Order>(`orders:*`),
+    data.get<Code>("currentCode"),
+  ]);
 
   const { inQueue, readyForPickup } = orders.items.reduce<{
     inQueue: Order[];
