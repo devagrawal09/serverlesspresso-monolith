@@ -3,15 +3,9 @@ import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 
 import { Subscribe } from "../lib/subscribe/server";
-
-import type { Order } from "../orders/[orderId]/page";
+import { Order, Code } from "@/app/domain";
 
 const DELAYS = Number(process.env.DELAYS || 0);
-
-export type Code = {
-  code: number;
-  uses: number;
-};
 
 export default function TvPage() {
   return (

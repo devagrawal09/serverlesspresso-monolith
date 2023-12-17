@@ -3,9 +3,9 @@ import Link from "next/link";
 import { setTimeout } from "timers/promises";
 import { data } from "@ampt/data";
 
-const DELAYS = Number(process.env.DELAYS || 0);
+import { Coffee } from "@/app/domain";
 
-export type Coffee = { name: string; id: number };
+const DELAYS = Number(process.env.DELAYS || 0);
 
 export default function Home() {
   return (

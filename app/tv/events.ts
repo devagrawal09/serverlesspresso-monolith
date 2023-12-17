@@ -1,12 +1,11 @@
-import { data } from "@ampt/data";
 import { task } from "@ampt/sdk";
-import type { Code } from "./page";
-import { emitTo } from "../lib/subscribe/socket";
+
+import { emitTo } from "@/app/lib/subscribe/socket";
+import { refreshCode } from "@/app/domain";
 
 const refreshCodeTask = task("refresh code", async () => {
   console.log("refresh code");
-  const randomCode = Math.floor(Math.random() * 10000);
-  await data.set<Code>("currentCode", { code: randomCode, uses: 0 });
+  await refreshCode();
   await emitTo("currentCode");
 });
 

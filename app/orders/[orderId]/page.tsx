@@ -5,18 +5,9 @@ import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 
 import { Subscribe } from "@/app/lib/subscribe/server";
+import { Order } from "@/app/domain";
 
 const DELAYS = Number(process.env.DELAYS || 0);
-
-export type Order = {
-  id: string;
-  userId: string;
-  coffee: {
-    id: number;
-    name: string;
-  };
-  status: "pending" | "confirmed" | "prepared" | "picked up";
-};
 
 export default async function OrderPage({
   params: { orderId },

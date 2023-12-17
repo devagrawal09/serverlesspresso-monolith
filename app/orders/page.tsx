@@ -3,9 +3,8 @@ import { data } from "@ampt/data";
 import Link from "next/link";
 import { setTimeout } from "timers/promises";
 
-import type { Order } from "./[orderId]/page";
-
-import { Subscribe } from "../lib/subscribe/server";
+import { Subscribe } from "@/app/lib/subscribe/server";
+import { Order } from "@/app/domain";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
