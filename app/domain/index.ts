@@ -1,11 +1,13 @@
 import { v4 as uuid } from "uuid";
 import {
   getCurrentCode,
-  getOrder,
   incrementCurrentCode,
   setCurrentCode,
   setOrder,
 } from "@/app/db";
+
+export type GetOrder = (orderId: string) => Promise<Order | undefined>;
+export type SetOrder = (order: Order) => Promise<any>;
 
 export type Coffee = {
   id: string;
@@ -24,35 +26,36 @@ export type Code = {
   uses: number;
 };
 
-export async function progressOrder(orderId: string) {
-  const order = await getOrder(orderId);
+export const progressOrder =
+  (getOrder: GetOrder, setOrder: SetOrder) => async (orderId: string) => {
+    const order = await getOrder(orderId);
 
-  if (!order) {
-    throw new Error(`Order not found: ${orderId}`);
-  }
+    if (!order) {
+      throw new Error(`Order not found: ${orderId}`);
+    }
 
-  const status = order.status;
+    const status = order.status;
 
-  if (status === "pending") {
-    order.status = "confirmed";
-  }
+    if (status === "pending") {
+      order.status = "confirmed";
+    }
 
-  if (status === "confirmed") {
-    order.status = "prepared";
-  }
+    if (status === "confirmed") {
+      order.status = "prepared";
+    }
 
-  if (status === "prepared") {
-    order.status = "picked up";
-  }
+    if (status === "prepared") {
+      order.status = "picked up";
+    }
 
-  if (status === "picked up") {
-    order.status = "pending";
-  }
+    if (status === "picked up") {
+      order.status = "pending";
+    }
 
-  await setOrder(order);
-}
+    await setOrder(order);
+  };
 
-export async function placeOrder({
+export const placeOrder = async ({
   code,
   userId,
   coffee,
@@ -60,7 +63,7 @@ export async function placeOrder({
   code: number;
   userId: string;
   coffee: Coffee;
-}) {
+}) => {
   const currentCode = await getCurrentCode();
 
   if (!currentCode) {
@@ -88,9 +91,9 @@ export async function placeOrder({
   console.log(`placeOrder`, { order });
 
   return order as Order;
-}
+};
 
-export async function refreshCode() {
+export const refreshCode = async () => {
   const randomCode = Math.floor(Math.random() * 10000);
   await setCurrentCode({ code: randomCode, uses: 0 });
-}
+};

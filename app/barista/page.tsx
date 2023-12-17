@@ -4,7 +4,7 @@ import { setTimeout } from "timers/promises";
 import { Subscribe } from "@/app/lib/subscribe/server";
 import { emitTo } from "@/app/lib/subscribe/socket";
 import { progressOrder } from "@/app/domain";
-import { getOrders } from "@/app/db";
+import { getOrder, getOrders, setOrder } from "@/app/db";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -48,7 +48,7 @@ async function BaristaView() {
               "use server";
               await setTimeout(DELAYS);
 
-              await progressOrder(order.id);
+              await progressOrder(getOrder, setOrder)(order.id);
 
               emitTo("orders");
               emitTo(`orders:${order.id}`);
