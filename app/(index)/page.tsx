@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { setTimeout } from "timers/promises";
+import { data } from "@ampt/data";
 
 const DELAYS = Number(process.env.DELAYS || 0);
+
+export type Coffee = { name: string; id: number };
 
 export default function Home() {
   return (
@@ -30,14 +33,11 @@ export default function Home() {
 async function Catalog() {
   await setTimeout(DELAYS);
 
-  const coffees = [
-    { id: 1, name: "Espresso" },
-    { id: 2, name: "Cappuccino" },
-  ];
+  const coffees = await data.get<Coffee>("coffee:*");
 
   return (
     <ul>
-      {coffees.map((coffee) => (
+      {coffees.items.map(({ value: coffee }) => (
         <li
           className="flex gap-4 m-2 p-3 border justify-between"
           key={coffee.id}

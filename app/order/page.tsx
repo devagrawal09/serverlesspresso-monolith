@@ -9,31 +9,21 @@ import { emitTo } from "../lib/subscribe/socket";
 
 import type { Code } from "../tv/page";
 import type { Order } from "../orders/[orderId]/page";
+import type { Coffee } from "../(index)/page";
 
 const DELAYS = Number(process.env.DELAYS || 0);
-
-const coffees = [
-  { id: 1, name: "Espresso" },
-  { id: 2, name: "Cappuccino" },
-];
 
 export default function OrderPage({
   searchParams,
 }: {
   searchParams: { coffee: string };
 }) {
-  const coffee = coffees.find(
-    (coffee) => coffee.id === Number(searchParams.coffee)
-  );
-
-  if (!coffee) {
-    redirect("/");
-  }
+  const coffeeId = Number(searchParams.coffee);
 
   return (
     <>
       <Suspense fallback={<p className="mb-4">Loading Order Form...</p>}>
-        <OrderForm coffee={coffee} />
+        <OrderForm coffeeId={coffeeId} />
       </Suspense>
       <Link href="/" className="p-2 bg-red-400 mt-4">
         Back
@@ -42,15 +32,14 @@ export default function OrderPage({
   );
 }
 
-async function OrderForm({
-  coffee,
-}: {
-  coffee: {
-    id: number;
-    name: string;
-  };
-}) {
+async function OrderForm({ coffeeId }: { coffeeId: number }) {
   await setTimeout(DELAYS);
+
+  const coffee = await data.get<Coffee>(`coffee:${coffeeId}`);
+
+  if (!coffee) {
+    throw new Error("Coffee not found");
+  }
 
   async function placeOrder(formData: FormData) {
     "use server";
