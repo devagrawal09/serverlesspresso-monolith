@@ -1,9 +1,8 @@
-import { data } from "@ampt/data";
 import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 
-import { Subscribe } from "../lib/subscribe/server";
-import { Order, Code } from "@/app/domain";
+import { Subscribe } from "@/app/lib/subscribe/server";
+import { getCurrentCode, getOrders } from "@/app/db";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -19,24 +18,12 @@ async function TvComponent() {
   await setTimeout(DELAYS);
 
   const [orders, currentCode] = await Promise.all([
-    data.get<Order>(`orders:*`),
-    data.get<Code>("currentCode"),
+    getOrders(),
+    getCurrentCode(),
   ]);
 
-  const { inQueue, readyForPickup } = orders.items.reduce<{
-    inQueue: Order[];
-    readyForPickup: Order[];
-  }>(
-    (acc, { value: order }) => {
-      if (order.status === "confirmed") {
-        acc.inQueue.push(order);
-      } else if (order.status === "prepared") {
-        acc.readyForPickup.push(order);
-      }
-      return acc;
-    },
-    { inQueue: [], readyForPickup: [] }
-  );
+  const inQueue = orders.filter((order) => order.status === "confirmed");
+  const readyForPickup = orders.filter((order) => order.status === "prepared");
 
   const max = Math.max(inQueue.length, readyForPickup.length);
   const arrayOfMax = Array.from({ length: max }, (_, i) => i + 1);

@@ -1,11 +1,10 @@
-import { data } from "@ampt/data";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 
 import { Subscribe } from "@/app/lib/subscribe/server";
-import { Order } from "@/app/domain";
+import { getOrder } from "@/app/db";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -27,7 +26,7 @@ export default async function OrderPage({
 async function OrderComponent({ orderId }: { orderId: string }) {
   await setTimeout(DELAYS);
 
-  const order = await data.get<Order>(`orders:${orderId}`);
+  const order = await getOrder(orderId);
   const user = { name: "Dev Agrawal", email: "dev@clerk.dev" };
 
   if (!order) {

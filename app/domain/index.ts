@@ -1,8 +1,14 @@
-import { data } from "@ampt/data";
 import { v4 as uuid } from "uuid";
+import {
+  getCurrentCode,
+  getOrder,
+  incrementCurrentCode,
+  setCurrentCode,
+  setOrder,
+} from "@/app/db";
 
 export type Coffee = {
-  id: number;
+  id: string;
   name: string;
 };
 
@@ -19,7 +25,7 @@ export type Code = {
 };
 
 export async function progressOrder(orderId: string) {
-  const order = await data.get<Order>(`orders:${orderId}`);
+  const order = await getOrder(orderId);
 
   if (!order) {
     throw new Error(`Order not found: ${orderId}`);
@@ -43,7 +49,7 @@ export async function progressOrder(orderId: string) {
     order.status = "pending";
   }
 
-  await data.set(`orders:${order.id}`, order);
+  await setOrder(order);
 }
 
 export async function placeOrder({
@@ -55,7 +61,7 @@ export async function placeOrder({
   userId: string;
   coffee: Coffee;
 }) {
-  const currentCode = await data.get<Code>("currentCode");
+  const currentCode = await getCurrentCode();
 
   if (!currentCode) {
     throw new Error("No code set");
@@ -69,14 +75,11 @@ export async function placeOrder({
     throw new Error("Code already used! Please wait for a new one");
   }
 
-  const res = await data.add<Code>("currentCode", "uses", 1);
+  const res = await incrementCurrentCode();
   console.log(`consumeCode`, { res });
 
-  const id = uuid();
-  const orderKey = `orders:${id}`;
-
-  const order = await data.set<Order>(orderKey, {
-    id,
+  const order = await setOrder({
+    id: uuid(),
     userId,
     coffee,
     status: "pending",
@@ -89,5 +92,5 @@ export async function placeOrder({
 
 export async function refreshCode() {
   const randomCode = Math.floor(Math.random() * 10000);
-  await data.set<Code>("currentCode", { code: randomCode, uses: 0 });
+  await setCurrentCode({ code: randomCode, uses: 0 });
 }

@@ -1,10 +1,9 @@
 import { Suspense } from "react";
-import { data } from "@ampt/data";
 import Link from "next/link";
 import { setTimeout } from "timers/promises";
 
 import { Subscribe } from "@/app/lib/subscribe/server";
-import { Order } from "@/app/domain";
+import { getOrders } from "@/app/db";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -27,10 +26,10 @@ async function OrdersComponent() {
   await setTimeout(DELAYS);
 
   const userId = "anonymous";
-  const orders = await data.get<Order>("orders:*");
+  const orders = await getOrders();
   const user = { name: "Dev Agrawal", email: "dev@clerk.dev" };
-  console.log(orders.items[0]);
-  if (!orders.items.length) {
+
+  if (!orders.length) {
     return (
       <p>
         There are no orders.{" "}
@@ -52,7 +51,7 @@ async function OrdersComponent() {
   return (
     <>
       <ul>
-        {orders.items.map(({ value: order }) => (
+        {orders.map((order) => (
           <li
             className="flex gap-4 m-2 p-3 border justify-between"
             key={order.id}

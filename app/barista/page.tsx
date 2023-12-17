@@ -1,10 +1,10 @@
-import { data } from "@ampt/data";
 import { Suspense } from "react";
 import { setTimeout } from "timers/promises";
 
 import { Subscribe } from "@/app/lib/subscribe/server";
 import { emitTo } from "@/app/lib/subscribe/socket";
-import { Order, progressOrder } from "@/app/domain";
+import { progressOrder } from "@/app/domain";
+import { getOrders } from "@/app/db";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -26,11 +26,11 @@ export default function BaristaPage() {
 async function BaristaView() {
   await setTimeout(DELAYS);
 
-  const orders = await data.get<Order>("orders:*");
+  const orders = await getOrders();
 
   return (
     <ul>
-      {orders.items.map(({ value: order }) => (
+      {orders.map((order) => (
         <li
           className="flex gap-4 m-2 p-3 border justify-between"
           key={order.id}

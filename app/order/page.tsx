@@ -1,12 +1,11 @@
-import { data } from "@ampt/data";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { setTimeout } from "timers/promises";
 import Link from "next/link";
 
 import { emitTo } from "@/app/lib/subscribe/socket";
-
-import { Coffee, placeOrder } from "@/app/domain";
+import { placeOrder } from "@/app/domain";
+import { getCoffee } from "@/app/db";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -15,12 +14,10 @@ export default function OrderPage({
 }: {
   searchParams: { coffee: string };
 }) {
-  const coffeeId = Number(searchParams.coffee);
-
   return (
     <>
       <Suspense fallback={<p className="mb-4">Loading Order Form...</p>}>
-        <OrderForm coffeeId={coffeeId} />
+        <OrderForm coffeeId={searchParams.coffee} />
       </Suspense>
       <Link href="/" className="p-2 bg-red-400 mt-4">
         Back
@@ -29,10 +26,10 @@ export default function OrderPage({
   );
 }
 
-async function OrderForm({ coffeeId }: { coffeeId: number }) {
+async function OrderForm({ coffeeId }: { coffeeId: string }) {
   await setTimeout(DELAYS);
 
-  const coffee = await data.get<Coffee>(`coffee:${coffeeId}`);
+  const coffee = await getCoffee(coffeeId);
 
   if (!coffee) {
     throw new Error("Coffee not found");

@@ -1,9 +1,8 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { setTimeout } from "timers/promises";
-import { data } from "@ampt/data";
 
-import { Coffee } from "@/app/domain";
+import { getCoffees } from "@/app/db";
 
 const DELAYS = Number(process.env.DELAYS || 0);
 
@@ -33,11 +32,11 @@ export default function Home() {
 async function Catalog() {
   await setTimeout(DELAYS);
 
-  const coffees = await data.get<Coffee>("coffee:*");
+  const coffees = await getCoffees();
 
   return (
     <ul>
-      {coffees.items.map(({ value: coffee }) => (
+      {coffees.map((coffee) => (
         <li
           className="flex gap-4 m-2 p-3 border justify-between"
           key={coffee.id}
