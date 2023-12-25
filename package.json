@@ -10,9 +10,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ampt/data": "^1",
-    "@ampt/nextjs": "^2",
-    "@ampt/sdk": "^1",
+    "@ampt/data": "^1.0.11",
+    "@ampt/nextjs": "^2.0.14",
+    "@ampt/sdk": "^1.0.8",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18",
